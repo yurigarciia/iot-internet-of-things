@@ -1,0 +1,4 @@
+// config.h  — NAO versionar (copiar como config.h e preencher; deve estar no .gitignore)
+#define WIFI_SSID   "SEU_WIFI"      // rede 2,4 GHz
+#define WIFI_PASS   "SUA_SENHA"
+#define WORKER_URL  "https://sua-api.SEU-USUARIO.workers.dev"

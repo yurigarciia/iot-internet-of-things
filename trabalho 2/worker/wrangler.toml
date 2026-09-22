@@ -1,0 +1,7 @@
+name = "iot-sensor-api"
+main = "worker.js"
+compatibility_date = "2024-09-01"
+
+[[kv_namespaces]]
+binding = "KV_SENSOR"
+id = "SEU_KV_NAMESPACE_ID"
