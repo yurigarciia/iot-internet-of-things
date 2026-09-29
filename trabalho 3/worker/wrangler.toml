@@ -1,0 +1,8 @@
+name = "iot-d1"
+main = "worker.js"
+compatibility_date = "2024-09-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "iot"
+database_id = "SEU_D1_DATABASE_ID"

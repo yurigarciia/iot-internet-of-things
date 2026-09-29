@@ -1,0 +1,20 @@
+# Credenciais do ESP32 (Wi-Fi + URL do Worker)
+esp32/**/config.h
+
+# Variaveis de ambiente / segredos
+.env
+.env.*
+!.env.example
+
+# Cloudflare Workers / Wrangler
+worker/node_modules/
+worker/.wrangler/
+worker/.dev.vars
+
+# Build do Arduino/PlatformIO
+esp32/**/.pio/
+esp32/**/build/
+
+# SO / editor
+.DS_Store
+Thumbs.db

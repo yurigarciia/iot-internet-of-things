@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "author": "Yuri Garcia",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 100,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "board-mfrc522",
+      "id": "rfid1",
+      "top": 0,
+      "left": 280,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 260,
+      "left": 300,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 280,
+      "left": 340,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    ["esp:5", "rfid1:SDA", "green", []],
+    ["esp:18", "rfid1:SCK", "yellow", []],
+    ["esp:23", "rfid1:MOSI", "blue", []],
+    ["esp:19", "rfid1:MISO", "orange", []],
+    ["esp:22", "rfid1:RST", "purple", []],
+    ["esp:3V3", "rfid1:3.3V", "red", []],
+    ["esp:GND.1", "rfid1:GND", "black", []],
+    ["esp:2", "led1:A", "green", []],
+    ["led1:C", "r1:1", "black", []],
+    ["r1:2", "esp:GND.2", "black", []],
+    ["esp:TX", "$serialMonitor:RX", "", []],
+    ["esp:RX", "$serialMonitor:TX", "", []]
+  ],
+  "dependencies": {}
+}
