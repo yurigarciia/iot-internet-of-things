@@ -6,9 +6,7 @@
 
 ## Link do projeto Wokwi
 
-> ⚠️ Cole aqui o link do projeto salvo no Wokwi (botão **Share** → copiar link).
-
-`https://wokwi.com/projects/SEU-PROJETO-AQUI`
+`https://wokwi.com/projects/476542947537617921`
 
 Prefixo dos tópicos MQTT usado: `sisla/yuri-garcia/rfid/`
 
