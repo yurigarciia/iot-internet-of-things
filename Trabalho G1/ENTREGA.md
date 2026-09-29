@@ -54,9 +54,6 @@ Tópico: sisla/yuri-garcia/rfid/cadastro
 
 ### 4. Tempo esgotado
 
-> ⚠️ Pendente — mandar `CADASTRO` e não passar nenhum cartão por 15s, depois
-> printar a linha `"status":"tempo esgotado"` no Serial Monitor.
-
 ```json
 Tópico: sisla/yuri-garcia/rfid/cadastro
 {"mac":"24:0A:C4:00:01:10","uid":"","status":"tempo esgotado"}
