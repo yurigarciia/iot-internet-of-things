@@ -12,6 +12,17 @@ Prefixo dos tópicos MQTT usado: `sisla/yuri-garcia/rfid/`
 
 ------------------------------------------------------------------------
 
+## Diagrama de ligações
+
+Print do editor Wokwi mostrando o código-fonte e o esquema de fiação entre
+o ESP32 e o leitor MFRC522 (SDA→GPIO5, SCK→GPIO18, MOSI→GPIO23,
+MISO→GPIO19, RST→GPIO22, 3V3 e GND), além do LED com resistor de 220 Ω no
+GPIO2:
+
+> ![Print: diagrama de ligações](prints/00-diagrama-ligacoes.png)
+
+------------------------------------------------------------------------
+
 ## Prints exigidos
 
 Todos os testes abaixo foram validados via `mosquitto_sub -h test.mosquitto.org -t "sisla/yuri-garcia/rfid/#" -v`
@@ -29,9 +40,13 @@ MQTT feita pelo ESP32):
 
 ### 1. Mensagem retida em `.../mac`
 
+*(visível também no canto inferior do print do diagrama de ligações, acima)*
+
+> ![Print: mac retido](prints/00-diagrama-ligacoes.png)
+
 ```json
 Tópico: sisla/yuri-garcia/rfid/mac (RETAIN)
-{"mac":"24:0A:C4:00:01:10","ip":"10.10.0.2","hora":"20:26:46"}
+{"mac":"24:0A:C4:00:01:10","ip":"10.10.0.2","hora":"20:50:59"}
 ```
 
 ### 2. Cadastro
@@ -103,10 +118,6 @@ Resposta: sisla/yuri-garcia/rfid/lista
 
 - **`nao_encontrada`**: `REMOVER FF FF FF FF` (UID inexistente) →
   `{"mac":"...","uid":"FF FF FF FF","status":"nao_encontrada"}`
-- **`lista cheia`**: coberto por inspeção de código (`entrarModoCadastro()` e
-  `processarCadastro()` bloqueiam e publicam `lista cheia` quando
-  `uidCount >= 10`); não exigido no roteiro de entrega e não simulado
-  fisicamente porque o Wokwi só disponibiliza 6 cartões diferentes.
 
 ------------------------------------------------------------------------
 
