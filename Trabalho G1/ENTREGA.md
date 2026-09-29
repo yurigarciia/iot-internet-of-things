@@ -16,8 +16,7 @@ Prefixo dos tópicos MQTT usado: `sisla/yuri-garcia/rfid/`
 
 Todos os testes abaixo foram validados via `mosquitto_sub -h test.mosquitto.org -t "sisla/yuri-garcia/rfid/#" -v`
 rodando em paralelo à simulação. Os payloads reais capturados estão citados
-junto de cada item — substitua o placeholder de imagem pelo print de tela
-correspondente (Wokwi + terminal MQTT lado a lado, ou MQTT Explorer).
+junto de cada item
 
 ### Log consolidado do Serial Monitor
 
@@ -29,9 +28,6 @@ MQTT feita pelo ESP32):
 > ![Print: log completo do Serial Monitor](prints/serial-log-completo.png)
 
 ### 1. Mensagem retida em `.../mac`
-
-> ⚠️ Pendente — print com o tópico completo (`sisla/yuri-garcia/rfid/mac (retain)`)
-> visível sem corte. Reiniciar a simulação e printar logo no boot.
 
 ```json
 Tópico: sisla/yuri-garcia/rfid/mac (RETAIN)
