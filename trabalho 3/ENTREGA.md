@@ -127,10 +127,40 @@ código continua `0`, mesmo que a conexão Wi-Fi local esteja ativa.
 
 ---
 
-## Arquivos desta entrega
+## Testes (`wrangler dev --local`)
 
-- `worker/worker.js` — Worker com `/insert`, `/get`, `/list`, `/media`, `/resumo`, `/log`, `/logs`.
-- `worker/schema.sql` — criação das tabelas `leituras` e `conexoes`.
-- `worker/wrangler.toml` — configuração de deploy (binding `DB` para o banco D1 `iot`).
-- `esp32/estacao_sensores/estacao_sensores.ino` — DHT11 (temp + umidade) + Wi-Fi + log de conexão + Deep Sleep.
-- `esp32/config.h.example` — modelo de credenciais (copiar para `config.h`, não versionar).
+```
+== POST /insert temp ==
+OK: temp=27.8
+
+== POST /insert umid ==
+OK: umid=61
+
+== POST /insert temp 2 ==
+OK: temp=31.2
+
+== POST /log ==
+LOG OK
+
+== GET /get?sensor=temp ==
+{"valor":31.2,"timestamp":1790726421986}
+
+== GET /list?sensor=temp ==
+[{"valor":31.2,"timestamp":1790726421986},{"valor":27.8,"timestamp":1790726421697}]
+
+== GET /list?sensor=umid ==
+[{"valor":61,"timestamp":1790726421892}]
+
+== GET /media?sensor=temp ==
+{"media":29.5,"minimo":27.8,"maximo":31.2,"n":2}
+
+== GET /resumo ==
+[{"sensor":"temp","media":29.5,"maximo":31.2,"n":2},{"sensor":"umid","media":61,"maximo":61,"n":1}]
+
+== GET /logs ==
+[{"ip":"192.168.0.42","rssi":-58,"tempo_ms":812,"internet":1,"timestamp":1790726422079}]
+```
+
+![Worker rodando via wrangler dev](worker.png)
+
+![Testes dos endpoints](image.png)
