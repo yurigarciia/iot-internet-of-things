@@ -1,0 +1,4 @@
+# Copie para .dev.vars (NAO versionar). Gere tokens longos:
+#   python -c "import secrets; print(secrets.token_urlsafe(32))"
+TOKEN_ESCRITA=troque-este-token-de-escrita
+TOKEN_LEITURA=troque-este-token-de-leitura

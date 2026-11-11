@@ -1,0 +1,13 @@
+{
+  "name": "silo-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "db:init": "wrangler d1 execute silo --local --file=schema.sql",
+    "dev": "wrangler dev --local --port 8788",
+    "test": "node teste_worker.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.144.0"
+  }
+}

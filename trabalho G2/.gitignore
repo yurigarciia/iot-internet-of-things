@@ -1,0 +1,22 @@
+# Segredos: Wi-Fi + chave HMAC do ESP32
+esp32/**/config.h
+
+# Segredos do servico e do Worker
+servico/.env
+worker/.dev.vars
+.env
+.env.*
+!.env.example
+
+# Wrangler / Node
+worker/node_modules/
+worker/.wrangler/
+
+# Python
+__pycache__/
+*.pyc
+
+# SO
+.DS_Store
+Thumbs.db
+seq.json

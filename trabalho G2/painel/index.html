@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel do Silo</title>
+<style>
+  :root {
+    --bg:#f4f5f2; --card:#ffffff; --ink:#1d2a1f; --mut:#667266; --line:#dfe3da;
+    --ok:#2f7d3a; --okbg:#e3f2e4; --warn:#b26a00; --warnbg:#fff1d6; --bad:#b3261e; --badbg:#fde4e1;
+    --acc:#2f6b3a; --accink:#fff; --fan:#d9822b; --umid:#2a6f97; --alvo:#9aa59a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#12170f; --card:#1b2218; --ink:#e7eee4; --mut:#9aa896; --line:#2c3628;
+      --ok:#7fd28a; --okbg:#1d3320; --warn:#f0b55a; --warnbg:#3a2c12; --bad:#ff8a80; --badbg:#3d1a17;
+      --acc:#7fd28a; --accink:#10200f; --fan:#f0a24e; --umid:#6ab7e6; --alvo:#6d7a69; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; justify-content:space-between;
+           padding:16px 20px; border-bottom:1px solid var(--line); background:var(--card); }
+  h1 { margin:0; font-size:19px; letter-spacing:.2px; }
+  h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--mut); font-weight:600; }
+  main { max-width:1000px; margin:0 auto; padding:16px; display:grid; gap:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+  .kpi .rot { font-size:12px; color:var(--mut); }
+  .kpi .val { font-size:30px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .kpi .un { font-size:14px; color:var(--mut); font-weight:400; }
+  .pill { display:inline-block; padding:3px 11px; border-radius:999px; font-size:12.5px; font-weight:700; }
+  .pill.ok { background:var(--okbg); color:var(--ok); } .pill.warn { background:var(--warnbg); color:var(--warn); }
+  .pill.bad { background:var(--badbg); color:var(--bad); } .pill.mut { background:var(--line); color:var(--mut); }
+  .banner { display:none; padding:12px 16px; border-radius:12px; background:var(--badbg); color:var(--bad); font-weight:600; }
+  .banner.on { display:block; }
+  button { font:inherit; font-weight:600; padding:8px 14px; border-radius:8px; border:1px solid var(--line);
+           background:var(--card); color:var(--ink); cursor:pointer; }
+  button.pri { background:var(--acc); color:var(--accink); border-color:var(--acc); }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  input { font:inherit; padding:7px 9px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  label small { color:var(--mut); display:block; font-size:11.5px; }
+  table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; font-size:13.5px; }
+  th,td { text-align:right; padding:6px 8px; border-bottom:1px solid var(--line); }
+  th:first-child,td:first-child { text-align:left; } th { color:var(--mut); font-weight:600; font-size:12px; }
+  ul { list-style:none; margin:0; padding:0; } li { padding:7px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
+  li:last-child { border-bottom:0; } .t { color:var(--mut); font-variant-numeric:tabular-nums; margin-right:6px; }
+  svg { width:100%; height:auto; display:block; }
+  .nota { color:var(--mut); font-size:12.5px; margin:8px 0 0; }
+  details summary { cursor:pointer; color:var(--mut); font-size:13px; }
+  .two { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Silo de grãos — <span id="siloNome">silo01</span></h1>
+    <div class="nota" id="sub">conectando…</div>
+  </div>
+  <div class="row"><span id="chipOnline" class="pill mut">—</span><span id="chipFan" class="pill mut">—</span></div>
+</header>
+
+<main>
+  <div id="banner" class="banner" role="alert"></div>
+
+  <section class="card">
+    <h2>Agora</h2>
+    <div class="grid">
+      <div class="kpi"><div class="rot">Umidade</div><div class="val"><span id="u">--</span><span class="un"> %</span></div></div>
+      <div class="kpi"><div class="rot">Temperatura</div><div class="val"><span id="t">--</span><span class="un"> °C</span></div></div>
+      <div class="kpi"><div class="rot">Bateria</div><div class="val"><span id="b">--</span><span class="un"> V</span></div></div>
+      <div class="kpi"><div class="rot">Última leitura</div><div class="val" style="font-size:20px" id="visto">--</div></div>
+    </div>
+    <p class="nota" id="regra"></p>
+  </section>
+
+  <section class="card">
+    <h2>Umidade — últimas 24 h</h2>
+    <svg id="grafico" viewBox="0 0 800 260" role="img" aria-label="Gráfico de umidade nas últimas 24 horas"></svg>
+    <p class="nota">Linhas tracejadas: limites de liga/desliga do ventilador. Pontos laranja: leitura com ventilador ligado.</p>
+  </section>
+
+  <div class="two">
+    <section class="card">
+      <h2>Comandar o ventilador</h2>
+      <div class="row">
+        <button class="pri" data-cmd="ventilador" data-val="on">Ligar</button>
+        <button data-cmd="ventilador" data-val="off">Desligar</button>
+        <button data-cmd="ventilador" data-val="auto">Automático</button>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <label><small>liga (U%)</small><input id="lLU" type="number" size="4" style="width:70px"></label>
+        <label><small>desliga (U%)</small><input id="lDU" type="number" style="width:70px"></label>
+        <label><small>liga (°C)</small><input id="lLT" type="number" style="width:70px"></label>
+        <label><small>desliga (°C)</small><input id="lDT" type="number" style="width:70px"></label>
+        <button id="enviarLim">Enviar limites</button>
+      </div>
+      <p class="nota">O ESP32 dorme entre as leituras. “Enviado” não é “executado”: o comando só vale quando o ESP32 acorda e devolve a confirmação.</p>
+      <ul id="cmds"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Alertas e eventos</h2>
+      <ul id="eventos"></ul>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Resumo por hora (consulta SQL no D1)</h2>
+    <table>
+      <thead><tr><th>Hora</th><th>Leituras</th><th>Umid. máx (%)</th><th>Umid. média (%)</th><th>Temp. máx (°C)</th><th>Com ventilador</th></tr></thead>
+      <tbody id="resumo"></tbody>
+    </table>
+  </section>
+
+  <details class="card">
+    <summary>Conexões e tokens</summary>
+    <div class="row" style="margin-top:10px">
+      <label><small>Ponte (comandos e estado)</small><input id="cPonte" size="26"></label>
+      <label><small>Token da ponte (TOKEN_COMANDO)</small><input id="cTokP" type="password" size="22"></label>
+      <label><small>Worker (histórico)</small><input id="cWorker" size="26"></label>
+      <label><small>Token de leitura (TOKEN_LEITURA)</small><input id="cTokW" type="password" size="22"></label>
+      <label><small>Silo</small><input id="cSilo" size="8"></label>
+      <button id="salvarCfg">Salvar</button>
+    </div>
+    <p class="nota">Ficam só neste navegador. A chave HMAC que assina os comandos <b>nunca</b> chega aqui: quem assina é a ponte.</p>
+  </details>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const padrao = { ponte: "http://127.0.0.1:8790", worker: "http://127.0.0.1:8788", tokP: "", tokW: "", silo: "silo01" };
+let cfg = { ...padrao };
+try { cfg = { ...padrao, ...JSON.parse(localStorage.getItem("silo_cfg") || "{}") }; } catch {}
+const guardar = () => { try { localStorage.setItem("silo_cfg", JSON.stringify(cfg)); } catch {} };
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const hhmm = ms => new Date(ms).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const dur = s => s < 90 ? Math.round(s) + " s" : s < 5400 ? Math.round(s / 60) + " min" : (s / 3600).toFixed(1) + " h";
+
+async function api(base, rota, token, opts = {}) {
+  const r = await fetch(base + rota, { ...opts, headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" } });
+  if (r.status === 401) throw new Error("token recusado");
+  return r.json();
+}
+
+// ---------------------------------------------------------------- estado (polling da ponte)
+let ultimoEstado = null;
+async function atualizarEstado() {
+  try {
+    const e = await api(cfg.ponte, "/estado", cfg.tokP);
+    ultimoEstado = e;
+    const tl = e.telemetria || {}, st = e.estado || {};
+    $("sub").textContent = "atualizado " + hhmm(Date.now()) + " · ciclo de " + e.sleep_s + " s";
+    $("u").textContent = tl.umid_pct != null ? tl.umid_pct.toFixed(1) : "--";
+    $("t").textContent = tl.temp_c != null ? tl.temp_c.toFixed(1) : "--";
+    $("b").textContent = tl.bat_v != null ? tl.bat_v.toFixed(2) : "--";
+    $("visto").textContent = e.ultimo_visto ? "há " + dur((Date.now() - e.ultimo_visto) / 1000) : "nunca";
+    chip("chipOnline", e.online ? "ok" : (e.ultimo_visto ? "bad" : "mut"), e.online ? "silo online" : (e.ultimo_visto ? "silo SEM COMUNICAÇÃO" : "aguardando 1ª leitura"));
+    if (tl.ventilador !== undefined) {
+      const modo = { auto: "automático", manual_on: "manual", manual_off: "manual" }[tl.modo] || tl.modo;
+      chip("chipFan", tl.ventilador ? "warn" : "ok", "ventilador " + (tl.ventilador ? "LIGADO" : "desligado") + " · " + modo);
+    }
+    if (st.liga_u !== undefined) {
+      $("regra").textContent = `Regra no ESP32: liga com umidade ≥ ${st.liga_u}% ou temp ≥ ${st.liga_t} °C; desliga com umidade ≤ ${st.desliga_u}% e temp ≤ ${st.desliga_t} °C.` + (st.bat_baixa ? " ⚠ bateria baixa: ciclo dobrado." : "");
+      for (const [id, k] of [["lLU","liga_u"],["lDU","desliga_u"],["lLT","liga_t"],["lDT","desliga_t"]])
+        if (document.activeElement.id !== id && !$(id).dataset.sujo) $(id).value = st[k];
+    }
+    const crit = tl.sensor_ok === false ? "Sensor do silo com leitura inválida — ventilador em estado seguro (ligado)."
+              : (tl.umid_pct >= e.umid_critica ? `Umidade crítica: ${tl.umid_pct.toFixed(1)}%.` : "");
+    $("banner").textContent = crit; $("banner").classList.toggle("on", !!crit);
+    desenharComandos(e.comandos || []);
+  } catch (err) {
+    $("sub").textContent = "ponte inacessível: " + err.message;
+    chip("chipOnline", "mut", "ponte offline");
+  }
+}
+function chip(id, cls, txt) { const c = $(id); c.className = "pill " + cls; c.textContent = txt; }
+
+function desenharComandos(lista) {
+  const rotulo = { pendente: ["warn", "enviado — aguardando o ESP32 acordar"], executado: ["ok", "executado ✓"],
+                   rejeitado: ["bad", "rejeitado pelo ESP32"], sem_confirmacao: ["bad", "sem confirmação (ESP32 offline?)"] };
+  $("cmds").innerHTML = lista.slice().reverse().map(c => {
+    const [cls, txt] = rotulo[c.status] || ["mut", c.status];
+    const extra = c.status === "pendente" && ultimoEstado
+      ? ` (${dur(Math.max(0, (Date.now() - c.criado) / 1000))}; desiste em ${dur(2 * ultimoEstado.sleep_s + 30)})` : (c.motivo && c.motivo !== "ok" ? " · " + esc(c.motivo) : "");
+    return `<li><span class="t">${hhmm(c.criado)}</span>${esc(c.cmd)} = <b>${esc(c.valor)}</b> <span class="pill ${cls}">${txt}</span>${extra}</li>`;
+  }).join("") || '<li class="nota">nenhum comando enviado</li>';
+}
+
+async function comandar(cmd, valor) {
+  try {
+    const r = await api(cfg.ponte, "/comando", cfg.tokP, { method: "POST", body: JSON.stringify({ cmd, valor }) });
+    if (r.erro) alert("Recusado: " + r.erro);
+    atualizarEstado();
+  } catch (e) { alert("Falha ao enviar: " + e.message); }
+}
+document.querySelectorAll("[data-cmd]").forEach(b => b.onclick = () => comandar(b.dataset.cmd, b.dataset.val));
+["lLU","lDU","lLT","lDT"].forEach(id => $(id).oninput = () => $(id).dataset.sujo = "1");
+$("enviarLim").onclick = () => {
+  comandar("limites", ["lLU","lDU","lLT","lDT"].map(id => $(id).value).join(","));
+  ["lLU","lDU","lLT","lDT"].forEach(id => delete $(id).dataset.sujo);
+};
+
+// ---------------------------------------------------------------- histórico (polling do Worker)
+async function atualizarHistorico() {
+  try {
+    const [h, r, ev] = await Promise.all([
+      api(cfg.worker, `/historico?silo=${cfg.silo}&horas=24&limite=500`, cfg.tokW),
+      api(cfg.worker, `/resumo?silo=${cfg.silo}&horas=24`, cfg.tokW),
+      api(cfg.worker, `/eventos?silo=${cfg.silo}`, cfg.tokW),
+    ]);
+    desenharGrafico(Array.isArray(h) ? h : []);
+    $("resumo").innerHTML = (Array.isArray(r) ? r : []).slice().reverse().map(x =>
+      `<tr><td>${new Date(x.hora).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+       <td>${x.leituras}</td><td>${x.umid_max}</td><td>${x.umid_media}</td><td>${x.temp_max}</td><td>${x.leituras_com_ventilador}</td></tr>`
+    ).join("") || '<tr><td colspan="6" class="nota">sem dados</td></tr>';
+    $("eventos").innerHTML = (Array.isArray(ev) ? ev : []).map(x =>
+      `<li><span class="t">${new Date(x.ts).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span><b>${esc(x.tipo)}</b> ${esc(x.detalhe)}</li>`
+    ).join("") || '<li class="nota">sem eventos</li>';
+  } catch (e) {
+    $("resumo").innerHTML = `<tr><td colspan="6" class="nota">Worker inacessível: ${esc(e.message)}</td></tr>`;
+  }
+}
+
+function desenharGrafico(pts) {
+  const W = 800, H = 260, m = { l: 38, r: 12, t: 10, b: 24 };
+  const agora = Date.now(), t0 = agora - 24 * 3600e3;
+  const x = ts => m.l + (ts - t0) / (agora - t0) * (W - m.l - m.r);
+  const ymin = 30, ymax = 100, y = v => m.t + (ymax - v) / (ymax - ymin) * (H - m.t - m.b);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n);
+  let s = "";
+  for (let v = 40; v <= 100; v += 20) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="${css("--line")}"/><text x="${m.l - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="${css("--mut")}">${v}</text>`;
+  for (let h = 0; h <= 24; h += 6) { const ts = t0 + h * 3600e3; s += `<text x="${x(ts)}" y="${H - 6}" text-anchor="middle" font-size="11" fill="${css("--mut")}">${new Date(ts).getHours()}h</text>`; }
+  const st = (ultimoEstado && ultimoEstado.estado) || {};
+  for (const [v, nome] of [[st.liga_u, "liga"], [st.desliga_u, "desliga"]])
+    if (v) s += `<line x1="${m.l}" x2="${W - m.r}" y1="${y(v)}" y2="${y(v)}" stroke="${css("--alvo")}" stroke-dasharray="5 4"/><text x="${W - m.r}" y="${y(v) - 3}" text-anchor="end" font-size="10.5" fill="${css("--mut")}">${nome} ${v}%</text>`;
+  const ok = pts.filter(p => p.sensor_ok && p.umid_pct != null);
+  if (!ok.length) s += `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="${css("--mut")}">sem leituras nas últimas 24 h</text>`;
+  else {
+    s += `<polyline fill="none" stroke="${css("--umid")}" stroke-width="2" points="${ok.map(p => x(p.ts).toFixed(1) + "," + y(p.umid_pct).toFixed(1)).join(" ")}"/>`;
+    s += ok.filter(p => p.ventilador).map(p => `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.umid_pct).toFixed(1)}" r="3.2" fill="${css("--fan")}"/>`).join("");
+  }
+  $("grafico").innerHTML = s;
+}
+
+// ---------------------------------------------------------------- config
+function mostrarCfg() { $("cPonte").value = cfg.ponte; $("cTokP").value = cfg.tokP; $("cWorker").value = cfg.worker; $("cTokW").value = cfg.tokW; $("cSilo").value = cfg.silo; $("siloNome").textContent = cfg.silo; }
+$("salvarCfg").onclick = () => {
+  cfg = { ponte: $("cPonte").value.trim().replace(/\/$/, ""), tokP: $("cTokP").value.trim(), worker: $("cWorker").value.trim().replace(/\/$/, ""), tokW: $("cTokW").value.trim(), silo: $("cSilo").value.trim() || "silo01" };
+  guardar(); mostrarCfg(); atualizarEstado(); atualizarHistorico();
+};
+mostrarCfg(); atualizarEstado(); atualizarHistorico();
+// Polling, não WebSocket: o ESP32 só fala a cada ciclo (minutos); manter uma conexão aberta não traria dado novo.
+// 4 s no estado da ponte (para o ack do comando aparecer logo) e 30 s no histórico.
+setInterval(atualizarEstado, 4000);
+setInterval(atualizarHistorico, 30000);
+</script>
+</body>
+</html>
