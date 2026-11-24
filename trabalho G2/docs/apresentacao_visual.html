@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Silo Vigia — guia visual</title>
+<style>
+  :root {
+    --bg:#f3f5ef; --card:#ffffff; --ink:#1c2a1e; --mut:#5f6e60; --line:#dde3d6; --soft:#eaf0e3;
+    --acc:#2f6b3a; --accink:#fff; --umid:#2a6f97; --fan:#d9822b; --ok:#2f7d3a; --okbg:#e1f1e2;
+    --warn:#a95f00; --warnbg:#fff0d2; --bad:#b3261e; --badbg:#fde4e1; --code:#eef2e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#11160f; --card:#1a2117; --ink:#e8efe5; --mut:#9aa997; --line:#2b3627; --soft:#202a1d;
+      --acc:#7fd28a; --accink:#10200f; --umid:#6ab7e6; --fan:#f0a24e; --ok:#7fd28a; --okbg:#1d3320;
+      --warn:#f0b55a; --warnbg:#3a2c12; --bad:#ff8a80; --badbg:#3d1a17; --code:#232d20; }
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  a { color:var(--acc); }
+  nav { position:sticky; top:0; z-index:5; background:var(--card); border-bottom:1px solid var(--line);
+        display:flex; gap:4px; overflow-x:auto; padding:8px 16px; scrollbar-width:thin; }
+  nav a { white-space:nowrap; text-decoration:none; color:var(--mut); font-size:13.5px; padding:5px 11px; border-radius:999px; }
+  nav a:hover, nav a.on { background:var(--soft); color:var(--ink); }
+  header.hero { padding:44px 20px 30px; max-width:1040px; margin:0 auto; }
+  .tag { display:inline-block; font-size:12px; letter-spacing:.8px; text-transform:uppercase; color:var(--acc); font-weight:700; }
+  h1 { font-size:clamp(30px,5vw,46px); line-height:1.1; margin:6px 0 12px; }
+  .lead { font-size:18px; color:var(--mut); max-width:760px; }
+  .frase { margin-top:18px; padding:16px 18px; border-left:4px solid var(--acc); background:var(--card); border-radius:0 12px 12px 0; font-size:16.5px; }
+  main { max-width:1040px; margin:0 auto; padding:0 20px 60px; }
+  section { padding-top:42px; }
+  h2 { font-size:26px; margin:0 0 4px; } h2 .n { color:var(--acc); margin-right:6px; }
+  .sub { color:var(--mut); margin:0 0 18px; }
+  h3 { font-size:15px; text-transform:uppercase; letter-spacing:.7px; color:var(--mut); margin:22px 0 8px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; }
+  .grid { display:grid; gap:14px; } .g2 { grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); } .g3 { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+  .pill { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12.5px; font-weight:700; background:var(--soft); color:var(--mut); }
+  .pill.ok { background:var(--okbg); color:var(--ok); } .pill.warn { background:var(--warnbg); color:var(--warn); } .pill.bad { background:var(--badbg); color:var(--bad); }
+  code { background:var(--code); padding:1px 6px; border-radius:5px; font-size:.88em; font-family:ui-monospace,Consolas,monospace; }
+  .big { font-size:34px; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
+  .big small { font-size:14px; font-weight:500; color:var(--mut); }
+  .why { background:var(--soft); border-radius:10px; padding:10px 14px; font-size:14.5px; margin-top:12px; }
+  .why b { color:var(--acc); }
+  svg { width:100%; height:auto; display:block; }
+  svg text { font-family:system-ui,Segoe UI,Roboto,sans-serif; fill:var(--ink); }
+  .svgmut { fill:var(--mut) !important; }
+  button { font:inherit; font-weight:600; padding:8px 14px; border-radius:9px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; }
+  button.pri { background:var(--acc); color:var(--accink); border-color:var(--acc); }
+  button.on { background:var(--soft); border-color:var(--acc); }
+  input[type=range] { width:100%; accent-color:var(--acc); }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  table { width:100%; border-collapse:collapse; font-size:14.5px; }
+  th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; } th { color:var(--mut); font-size:12.5px; text-transform:uppercase; letter-spacing:.6px; }
+  .steps { display:flex; gap:0; overflow-x:auto; padding-bottom:6px; }
+  .step { flex:1 0 118px; text-align:center; padding:0 4px; position:relative; }
+  .step .dot { width:34px; height:34px; border-radius:50%; background:var(--acc); color:var(--accink); font-weight:800; display:grid; place-items:center; margin:0 auto 6px; }
+  .step:not(:last-child)::after { content:""; position:absolute; top:17px; left:calc(50% + 22px); right:calc(-50% + 22px); height:2px; background:var(--line); }
+  .step b { display:block; font-size:13.5px; } .step span { font-size:12px; color:var(--mut); }
+  .bar { display:flex; height:30px; border-radius:8px; overflow:hidden; margin:10px 0 4px; font-size:11.5px; font-weight:700; color:#fff; }
+  .bar div { display:grid; place-items:center; white-space:nowrap; overflow:hidden; }
+  .qa { cursor:pointer; } .qa summary { font-weight:700; list-style:none; } .qa summary::before { content:"＋ "; color:var(--acc); } .qa[open] summary::before { content:"－ "; }
+  .qa p { margin:8px 0 0; color:var(--mut); }
+  footer { text-align:center; color:var(--mut); font-size:13px; padding:10px 20px 40px; }
+  .stage { display:flex; align-items:center; gap:10px; }
+  .led { width:46px; height:46px; border-radius:50%; background:#8a948a; box-shadow:inset 0 0 0 4px rgba(0,0,0,.15); transition:all .25s; flex:none; }
+  .led.on { background:var(--fan); box-shadow:0 0 24px var(--fan); }
+</style>
+</head>
+<body>
+<nav id="nav">
+  <a href="#problema">Problema</a><a href="#requisitos">Requisitos</a><a href="#arquitetura">Arquitetura</a><a href="#ciclo">Ciclo</a>
+  <a href="#regra">Regra</a><a href="#comunicacao">Comunicação</a><a href="#comando">Comando</a><a href="#dados">Dados</a>
+  <a href="#seguranca">Segurança</a><a href="#energia">Energia</a><a href="#testes">Testes</a><a href="#perguntas">Perguntas</a>
+</nav>
+
+<header class="hero">
+  <span class="tag">IoT · G0813 · Trabalho N2 — Caderno de Projeto</span>
+  <h1>Silo Vigia</h1>
+  <p class="lead">Um nó com bateria que mede o ar dentro do silo, decide sozinho quando ventilar o grão e conta tudo para a nuvem — mesmo quando a internet cai.</p>
+  <div class="frase"><b>Frase da ideia:</b> “Para o produtor rural, que sofre com grão estragando por umidade em silo sem tomada, o Silo Vigia <b>sente</b> umidade e temperatura (DHT22), <b>decide</b> (liga com umidade ≥ 70 % ou temperatura ≥ 35 °C) e <b>age</b> com o ventilador, mesmo com bateria de 18650 e sem internet.”</div>
+</header>
+
+<main>
+
+<!-- ============================================================ PROBLEMA -->
+<section id="problema">
+  <h2><span class="n">0·1</span>O problema e os requisitos</h2>
+  <p class="sub">Desafio escolhido: <b>A — Silo de grãos</b>. A pergunta difícil: quanto tempo o ESP32 pode ficar acordado para a bateria durar?</p>
+  <div class="grid g3">
+    <div class="card"><div class="big">70<small> %</small></div><p>Umidade a partir da qual o grão começa a correr risco. O ventilador liga.</p></div>
+    <div class="card"><div class="big">0<small> tomadas</small></div><p>O silo fica no campo: tudo vive de bateria e de um Wi-Fi que falha.</p></div>
+    <div class="card"><div class="big">350<small> dias</small></div><p>Autonomia calculada com ciclo de 30 min e 2 × 18650.</p></div>
+  </div>
+
+  <h3 id="requisitos">Requisitos (todos medíveis)</h3>
+  <div class="card" style="padding:0;overflow-x:auto">
+  <table>
+    <tr><th>Cód.</th><th>O dispositivo deve…</th><th>Como se comprova</th></tr>
+    <tr><td><b>RF1</b></td><td>Ligar com umidade ≥ 70 % <b>ou</b> temp ≥ 35 °C; desligar só com umidade ≤ 65 % <b>e</b> temp ≤ 32 °C, em segundos e sem rede.</td><td>Wokwi: 75 % liga, 63 % desliga; 36 °C liga, 31 °C desliga.</td></tr>
+    <tr><td><b>RF2</b></td><td>Se o sensor falhar 3 vezes seguidas, ligar o ventilador (estado seguro) e alertar.</td><td>Wokwi sem o fio SDA: 3ª falha → ON + alerta.</td></tr>
+    <tr><td><b>RF3</b></td><td>Publicar telemetria assinada por MQTT/TLS e guardar o histórico sem duplicar.</td><td>25 testes do Worker; resumo por hora.</td></tr>
+    <tr><td><b>RF4</b></td><td>Só executar comando com assinatura e sequência válidas; o painel só diz “executado” com o ack.</td><td>Testes da ponte + ataque de comando falso.</td></tr>
+    <tr><td><b>RF5</b></td><td>Alertar (umidade ≥ 80 %, sensor, bateria, silo offline) sem repetir antes de 30 min.</td><td>Cooldown no KV com TTL.</td></tr>
+    <tr><td><b>RNF</b></td><td>≥ 300 dias de bateria · funcionar sem internet · só TLS conferido · nenhum segredo no GitHub.</td><td>Cálculo, fila offline, 5 buracos de segurança.</td></tr>
+  </table></div>
+</section>
+
+<!-- ============================================================ ARQUITETURA -->
+<section id="arquitetura">
+  <h2><span class="n">9</span>Arquitetura em quatro camadas</h2>
+  <p class="sub">Do sensor ao painel. Cada seta é uma decisão: protocolo, segurança e quem pode “chamar” quem.</p>
+  <div class="card">
+  <svg viewBox="0 0 1000 440" role="img" aria-label="Arquitetura: dispositivo, rede, nuvem e interface">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--mut)"/></marker></defs>
+    <!-- bands -->
+    <g font-size="12" font-weight="700" class="svgmut">
+      <text x="14" y="22" class="svgmut">DISPOSITIVO</text><text x="262" y="22" class="svgmut">REDE</text><text x="498" y="22" class="svgmut">NUVEM</text><text x="796" y="22" class="svgmut">INTERFACE</text>
+    </g>
+    <rect x="8" y="30" width="236" height="400" rx="14" fill="var(--soft)"/><rect x="256" y="30" width="226" height="400" rx="14" fill="var(--soft)" opacity=".55"/>
+    <rect x="492" y="30" width="290" height="400" rx="14" fill="var(--soft)"/><rect x="792" y="30" width="200" height="400" rx="14" fill="var(--soft)" opacity=".55"/>
+    <!-- device -->
+    <g><rect x="24" y="52" width="204" height="92" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="40" y="78" font-weight="700">ESP32</text>
+    <text x="40" y="98" font-size="12.5" class="svgmut">lê → DECIDE → aciona → dorme</text><text x="40" y="118" font-size="12.5" class="svgmut">NVS: limites, estado, seq</text><text x="40" y="136" font-size="12.5" class="svgmut">RTC: fila offline (24)</text></g>
+    <g><rect x="24" y="162" width="96" height="58" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="36" y="188" font-weight="700">DHT22</text><text x="36" y="206" font-size="12" class="svgmut">GPIO 4</text>
+    <rect x="132" y="162" width="96" height="58" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="144" y="188" font-weight="700">Ventilador</text><text x="144" y="206" font-size="12" class="svgmut">GPIO 2 · relé</text></g>
+    <g><rect x="24" y="236" width="204" height="52" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="40" y="258" font-weight="700">Bateria 2 × 18650</text><text x="40" y="276" font-size="12" class="svgmut">divisor → GPIO 34 (ADC)</text></g>
+    <path d="M76 162V144M180 162V144" stroke="var(--mut)" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- broker -->
+    <g><rect x="276" y="150" width="186" height="104" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="292" y="176" font-weight="700">Broker MQTT</text>
+    <text x="292" y="196" font-size="12.5" class="svgmut">TLS 8883 · CA conferida</text><text x="292" y="214" font-size="12.5" class="svgmut">mensagem RETIDA (comando)</text><text x="292" y="232" font-size="12.5" class="svgmut">público → tudo assinado</text></g>
+    <!-- cloud -->
+    <g><rect x="508" y="52" width="258" height="96" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="524" y="78" font-weight="700">Ponte (ponte.py)</text>
+    <text x="524" y="98" font-size="12.5" class="svgmut">confere HMAC · alerta + cooldown</text><text x="524" y="116" font-size="12.5" class="svgmut">vigia “silo offline” · assina comando</text><text x="524" y="134" font-size="12.5" class="svgmut">fila se o Worker cair</text></g>
+    <g><rect x="508" y="186" width="258" height="150" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="524" y="212" font-weight="700">Cloudflare Worker</text>
+    <text x="524" y="232" font-size="12.5" class="svgmut">token Bearer em toda rota</text>
+    <rect x="524" y="246" width="106" height="72" rx="8" fill="var(--soft)"/><text x="534" y="268" font-weight="700" font-size="13">D1</text><text x="534" y="286" font-size="11.5" class="svgmut">leituras</text><text x="534" y="302" font-size="11.5" class="svgmut">eventos</text>
+    <rect x="644" y="246" width="108" height="72" rx="8" fill="var(--soft)"/><text x="654" y="268" font-weight="700" font-size="13">KV</text><text x="654" y="286" font-size="11.5" class="svgmut">último estado</text><text x="654" y="302" font-size="11.5" class="svgmut">cooldown (TTL)</text></g>
+    <path d="M637 148V186" stroke="var(--mut)" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- interface -->
+    <g><rect x="808" y="120" width="168" height="170" rx="10" fill="var(--card)" stroke="var(--line)"/><text x="824" y="146" font-weight="700">Painel</text>
+    <text x="824" y="168" font-size="12.5" class="svgmut">estado + gráfico 24 h</text><text x="824" y="186" font-size="12.5" class="svgmut">resumo SQL por hora</text><text x="824" y="204" font-size="12.5" class="svgmut">alertas e eventos</text><text x="824" y="222" font-size="12.5" class="svgmut">comando → “executado”</text><text x="824" y="246" font-size="12.5" font-weight="700" fill="var(--acc)">polling 4 s / 30 s</text></g>
+    <!-- arrows -->
+    <path d="M228 98H276V180" fill="none" stroke="var(--acc)" stroke-width="2.4" marker-end="url(#ah)"/><text x="236" y="90" font-size="11.5" fill="var(--acc)" font-weight="700">MQTT/TLS</text>
+    <path d="M462 200H508V100" fill="none" stroke="var(--acc)" stroke-width="2.4" marker-end="url(#ah)"/>
+    <path d="M508 112H476V170" fill="none" stroke="var(--fan)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ah)"/><text x="470" y="262" font-size="11.5" fill="var(--fan)" font-weight="700" text-anchor="end"></text>
+    <path d="M766 108H850V120" fill="none" stroke="var(--mut)" stroke-width="2" marker-end="url(#ah)"/><text x="772" y="100" font-size="11.5" class="svgmut">comando (assinado)</text>
+    <path d="M766 260H808" stroke="var(--mut)" stroke-width="2" marker-end="url(#ah)"/><text x="770" y="252" font-size="11.5" class="svgmut">histórico</text>
+    <path d="M276 238H252V114H228" fill="none" stroke="var(--fan)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+    <!-- legend -->
+    <g font-size="12"><line x1="30" y1="372" x2="66" y2="372" stroke="var(--acc)" stroke-width="2.4"/><text x="74" y="376">telemetria / ack / estado (ESP32 → nuvem)</text>
+    <line x1="30" y1="396" x2="66" y2="396" stroke="var(--fan)" stroke-width="2" stroke-dasharray="6 4"/><text x="74" y="400">comando retido (nuvem → ESP32, quando ele acordar)</text></g>
+  </svg></div>
+  <div class="why"><b>Por que a ponte?</b> O ESP32 só fala MQTT (não faz HTTPS: menos código, menos ataque). A ponte confere a assinatura de tudo que chega, grava no Worker com token e é a única que conhece a chave que assina comandos.</div>
+</section>
+
+<!-- ============================================================ CICLO -->
+<section id="ciclo">
+  <h2><span class="n">2·3</span>Um ciclo de vida do ESP32</h2>
+  <p class="sub">Tudo acontece no <code>setup()</code>: o deep sleep reinicia a placa. Quase todo o tempo ele está dormindo.</p>
+  <div class="card">
+    <div class="steps">
+      <div class="step"><div class="dot">1</div><b>Acorda</b><span>reassume estado da NVS</span></div>
+      <div class="step"><div class="dot">2</div><b>Lê o DHT22</b><span>até 3 tentativas</span></div>
+      <div class="step"><div class="dot">3</div><b>Decide</b><span>antes da rede!</span></div>
+      <div class="step"><div class="dot">4</div><b>Wi-Fi + NTP</b><span>teto de 10 s</span></div>
+      <div class="step"><div class="dot">5</div><b>TLS + MQTT</b><span>CA conferida</span></div>
+      <div class="step"><div class="dot">6</div><b>Recebe comando</b><span>1,5 s · retido</span></div>
+      <div class="step"><div class="dot">7</div><b>Publica</b><span>telemetria, estado, ack</span></div>
+      <div class="step"><div class="dot">8</div><b>Dorme</b><span>ventilador fica preso</span></div>
+    </div>
+    <h3>Onde a bateria vai (por ciclo de 8,5 s acordado)</h3>
+    <div class="bar" id="barraCiclo"></div>
+    <div class="row" style="font-size:13px;color:var(--mut)"><span>Decidir <b>antes</b> de ligar a rede garante que o ventilador funciona mesmo offline.</span></div>
+    <div class="why"><b>Sem internet:</b> o Wi-Fi tem teto de 10 s; se falhar, a leitura vai para uma fila na memória RTC (até 24) e a placa volta a dormir. Na volta, o ESP32 envia primeiro as atrasadas (<code>atrasada:true</code>, com a hora original) e depois a atual. O banco ignora duplicatas pelo índice único <code>(silo, ts)</code>.</div>
+  </div>
+</section>
+
+<!-- ============================================================ REGRA -->
+<section id="regra">
+  <h2><span class="n">3</span>A regra de decisão (mexa nela)</h2>
+  <p class="sub">Roda no ESP32, não na nuvem: precisa funcionar sem internet, o ESP32 dorme (a nuvem não o “chama”) e a reação tem que ser rápida. Arraste e veja a <b>histerese</b>.</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="stage"><div class="led" id="led"></div><div><div style="font-weight:800;font-size:20px" id="fanTxt">Ventilador desligado</div><div class="pill" id="fanWhy">aguardando</div></div></div>
+      <h3>Umidade <b id="uV">62</b> %</h3><input type="range" id="u" min="40" max="95" value="62" step="1">
+      <h3>Temperatura <b id="tV">27</b> °C</h3><input type="range" id="t" min="20" max="45" value="27" step="1">
+      <div class="row" style="margin-top:14px"><button id="sFalha">Sensor falhou (NaN)</button><button id="sOk">Sensor voltou</button><button id="sReset">Reiniciar</button></div>
+      <div style="margin-top:10px;font-size:14px;color:var(--mut)">Falhas seguidas: <b id="fV" style="color:var(--ink)">0</b> / 3</div>
+    </div>
+    <div class="card">
+      <svg viewBox="0 0 420 250" role="img" aria-label="Máquina de estados do ventilador">
+        <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--mut)"/></marker></defs>
+        <rect id="stOff" x="20" y="90" width="130" height="70" rx="14" fill="var(--soft)" stroke="var(--line)" stroke-width="2"/><text x="85" y="132" text-anchor="middle" font-weight="800">DESLIGADO</text>
+        <rect id="stOn" x="270" y="90" width="130" height="70" rx="14" fill="var(--soft)" stroke="var(--line)" stroke-width="2"/><text x="335" y="132" text-anchor="middle" font-weight="800">LIGADO</text>
+        <path d="M150 108H270" stroke="var(--mut)" stroke-width="2" marker-end="url(#ah2)"/><text x="210" y="82" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--fan)">umid ≥ 70 % ou temp ≥ 35</text><text x="210" y="98" text-anchor="middle" font-size="11.5" class="svgmut">liga</text>
+        <path d="M270 142H150" stroke="var(--mut)" stroke-width="2" marker-end="url(#ah2)"/><text x="210" y="172" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--umid)">umid ≤ 65 % e temp ≤ 32</text><text x="210" y="188" text-anchor="middle" font-size="11.5" class="svgmut">desliga</text>
+        <text x="210" y="226" text-anchor="middle" font-size="12.5" class="svgmut">entre 65 e 70 %: fica como está (histerese)</text>
+        <text x="210" y="30" text-anchor="middle" font-size="12.5" class="svgmut">3 falhas seguidas do sensor → LIGADO (estado seguro)</text>
+      </svg>
+      <div class="why"><b>Por que histerese?</b> Com um único limite, o ventilador ficaria ligando e desligando quando a umidade oscila perto de 70 %. Dois limites criam uma “zona morta” de 5 pontos.<br><b>Por que ventilar na falha?</b> Ventilar gasta pouca energia; grão úmido estraga.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ COMUNICAÇÃO -->
+<section id="comunicacao">
+  <h2><span class="n">4</span>Comunicação: protocolo, tópicos e TLS</h2>
+  <p class="sub">MQTT para falar com o dispositivo, HTTP para falar com a nuvem. Dispositivo que dorme pede mensagem <b>retida</b>.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">Árvore de tópicos <code>sis1a/yuripaim/silo01/</code></h3>
+      <table>
+        <tr><th>Tópico</th><th>Quem publica</th><th>Quem assina</th></tr>
+        <tr><td><code>telemetria</code></td><td>ESP32</td><td>ponte</td></tr>
+        <tr><td><code>estado</code> <span class="pill">retido</span></td><td>ESP32</td><td>ponte</td></tr>
+        <tr><td><code>comando</code> <span class="pill warn">retido · QoS 1</span></td><td>ponte</td><td>ESP32</td></tr>
+        <tr><td><code>ack</code> <span class="pill">retido</span></td><td>ESP32</td><td>ponte</td></tr>
+        <tr><td><code>alerta</code></td><td>ponte</td><td>quem quiser</td></tr>
+      </table>
+      <div class="why"><b>100 silos?</b> Um assinante só: <code>sis1a/yuripaim/+/telemetria</code>.</div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Telemetria (JSON)</h3>
+<pre style="margin:0;background:var(--code);padding:12px;border-radius:10px;overflow:auto;font-size:12.5px;line-height:1.5"><code style="background:none;padding:0">{"v":1,"silo":"silo01","ts":1794349737,
+ "ciclo":12,"temp_c":27.4,"umid_pct":68.2,
+ "ventilador":0,"modo":"auto","sensor_ok":true,
+ "bat_v":3.92,"rssi":-58,"atrasada":false,
+ "mac":"<b>HMAC-SHA256 do texto acima</b>"}</code></pre>
+      <div class="why"><b>TLS:</b> porta <b>8883</b>. O ESP32 usa <code>setCACert()</code> com a CA do broker e valida cadeia e nome. <b>Nunca</b> <code>setInsecure()</code>. Como o certificado tem validade, ele acerta o relógio por NTP antes; se falhar, <b>não conecta</b>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ COMANDO -->
+<section id="comando">
+  <h2><span class="n">6·7</span>Comando: enviado não é executado</h2>
+  <p class="sub">Passe pelos passos. Alterne para ver o que acontece com um comando <b>falso</b> no broker público.</p>
+  <div class="card">
+    <div class="row" style="margin-bottom:10px">
+      <button id="mLegit" class="on">Comando legítimo</button><button id="mFake">Comando falso (atacante)</button>
+      <span style="flex:1"></span><button id="prev">◀</button><button id="next" class="pri">Próximo passo ▶</button><button id="rst">↺</button>
+    </div>
+    <svg id="seq" viewBox="0 0 1000 470" role="img" aria-label="Diagrama de sequência do comando"></svg>
+    <div class="why" id="seqTxt" style="min-height:64px"></div>
+  </div>
+</section>
+
+<!-- ============================================================ DADOS -->
+<section id="dados">
+  <h2><span class="n">5·6</span>Guardar e mostrar</h2>
+  <p class="sub">D1 para o passado, KV para o “último valor” e para o cooldown, e um painel honesto sobre o que sabe.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">D1 + KV: quem guarda o quê</h3>
+      <table>
+        <tr><th></th><th>D1 (SQL)</th><th>KV (chave-valor)</th></tr>
+        <tr><td>Guarda</td><td>cada leitura é uma linha; eventos</td><td><code>ultimo:silo01</code>, <code>cooldown:…</code></td></tr>
+        <tr><td>Por quê</td><td>responde perguntas sobre o passado</td><td>valor mais recente; chave que <b>expira sozinha</b></td></tr>
+        <tr><td>Retenção</td><td colspan="2">30 dias · sem dado pessoal (LGPD não se aplica)</td></tr>
+      </table>
+      <h3>Consulta de resumo</h3>
+<pre style="margin:0;background:var(--code);padding:12px;border-radius:10px;overflow:auto;font-size:12.5px"><code style="background:none;padding:0">SELECT strftime('%Y-%m-%dT%H:00:00Z', ts/1000,'unixepoch') AS hora,
+  COUNT(*) AS leituras,
+  ROUND(MAX(umid_pct),1)  AS umid_max,
+  ROUND(AVG(umid_pct),1)  AS umid_media,
+  SUM(ventilador)         AS leituras_com_ventilador
+FROM leituras
+WHERE silo=? AND ts>=? AND sensor_ok=1
+GROUP BY hora ORDER BY hora</code></pre>
+      <p class="sub" style="margin:8px 0 0">Pergunta: <i>qual a umidade máxima e média por hora nas últimas 24 h e quantas vezes o ventilador estava ligado?</i></p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Painel: o que ele promete</h3>
+      <div class="row" style="margin-bottom:10px"><span class="pill warn">enviado — aguardando o ESP32 acordar</span> <span class="pill ok">executado ✓</span> <span class="pill bad">sem confirmação</span></div>
+      <p>O painel só mostra <b>executado</b> quando o ack assinado chega. Sem ack em <b>2 × ciclo + 30 s</b> (o ciclo pode estar dobrado por bateria baixa), mostra “sem confirmação”.</p>
+      <h3>Alerta com cooldown</h3>
+      <svg viewBox="0 0 420 110" role="img" aria-label="Linha do tempo de alertas com cooldown">
+        <line x1="10" y1="60" x2="410" y2="60" stroke="var(--line)" stroke-width="3"/>
+        <g id="cdTicks"></g>
+        <rect x="60" y="68" width="150" height="16" rx="8" fill="var(--warnbg)"/><text x="135" y="80" text-anchor="middle" font-size="11" fill="var(--warn)" font-weight="700">cooldown 30 min</text>
+        <text x="10" y="102" font-size="11.5" class="svgmut">cada ● = a umidade continua crítica; só o 1º vira alerta</text>
+      </svg>
+      <h3>Polling, não WebSocket</h3>
+      <p style="margin:0">O ESP32 só fala a cada 30 min. Uma conexão aberta o tempo todo não traria dado novo. Painel: 4 s no estado (para o ack aparecer logo) e 30 s no histórico.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SEGURANÇA -->
+<section id="seguranca">
+  <h2><span class="n">7</span>Segurança: os cinco buracos</h2>
+  <p class="sub">Para cada um: existe no sistema? Como foi fechado?</p>
+  <div class="grid g2">
+    <div class="card"><span class="pill ok">fechado</span> <b>1 · MQTT sem TLS (1883)</b><p>Só porta 8883. ESP32 e ponte conferem a CA; sem hora válida o ESP32 nem conecta.</p></div>
+    <div class="card"><span class="pill ok">não existe</span> <b>2 · setInsecure() no HTTPS</b><p>O ESP32 não faz HTTPS. A ponte usa <code>requests</code> (valida certificado); local fala só com 127.0.0.1.</p></div>
+    <div class="card"><span class="pill ok">fechado</span> <b>3 · Rota de gravação aberta</b><p>Todo endpoint exige <code>Bearer</code>; token de escrita ≠ leitura; comparação em tempo constante; sem token configurado o Worker <b>falha fechado</b>.</p></div>
+    <div class="card"><span class="pill warn">existia — fechado na aplicação</span> <b>4 · Tópico de comando aberto</b><p>O broker é público: qualquer um publica. Por isso o comando leva <b>HMAC-SHA256</b> sobre <code>seq|cmd|valor</code> e número de sequência crescente (anti-replay). Telemetria, estado e ack também são assinados.</p></div>
+    <div class="card"><span class="pill ok">fechado</span> <b>5 · Segredo no GitHub ou no Serial</b><p><code>config.h</code>, <code>.env</code>, <code>.dev.vars</code> no <code>.gitignore</code>; só os <code>*.example</code> vão ao repositório; o firmware nunca imprime a chave nem a senha.</p></div>
+    <div class="card" style="background:var(--warnbg);border-color:transparent"><b style="color:var(--warn)">Limite honesto</b><p style="margin-bottom:0">TLS protege o trajeto, mas o broker público e quem assina o tópico <b>podem ler</b> a telemetria. Para sigilo ou controle de acesso por dispositivo, seria preciso um broker próprio com usuário e senha.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================ ENERGIA -->
+<section id="energia">
+  <h2><span class="n">8</span>Extra: energia e autonomia</h2>
+  <p class="sub">Corrente média = Σ(corrente × tempo) ÷ período · Autonomia = capacidade útil ÷ corrente média. Mexa no ciclo.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3 style="margin-top:0">Ciclo entre despertares: <b id="pV">30 min</b></h3>
+      <input type="range" id="p" min="0" max="5" value="3" step="1">
+      <div class="row" style="justify-content:space-between;font-size:12px;color:var(--mut)"><span>30 s</span><span>5 min</span><span>15 min</span><span>30 min</span><span>60 min</span><span>2 h</span></div>
+      <label class="row" style="margin-top:14px"><input type="checkbox" id="semSono"> <span>Sem deep sleep (Wi-Fi sempre ligado, ~80 mA)</span></label>
+      <div class="grid g3" style="margin-top:14px">
+        <div><div class="big" id="iMed">0.57<small> mA</small></div><span class="sub">corrente média</span></div>
+        <div><div class="big" id="dias">350<small> dias</small></div><span class="sub">autonomia</span></div>
+        <div><div class="pill" id="meta">—</div><span class="sub"><br>meta: ≥ 300 dias</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Premissas <span class="pill warn">típicas, não medidas</span></h3>
+      <table>
+        <tr><td>Boot + DHT22</td><td>2,5 s</td><td>45 mA</td></tr>
+        <tr><td>Wi-Fi + NTP</td><td>3,0 s</td><td>130 mA</td></tr>
+        <tr><td>TLS + MQTT + comando</td><td>3,0 s</td><td>140 mA</td></tr>
+        <tr><td>Deep sleep (ESP32 + DHT22)</td><td>—</td><td>0,06 mA</td></tr>
+        <tr><td>Bateria</td><td colspan="2">2 × 18650 de 3.000 mAh · 80 % úteis = 4.800 mAh</td></tr>
+      </table>
+      <div class="why"><b>Decisão de projeto:</b> ficar 5 s acordado esperando comando gasta <b>34 % mais</b> corrente que a janela de 1,5 s com mensagem retida. O ventilador usa fonte própria e não entra na conta.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ TESTES -->
+<section id="testes">
+  <h2><span class="n">10</span>O que foi testado</h2>
+  <p class="sub">Evidências reais. A Etapa 10 deixou de ser exigida, mas estes resultados são a base para responder perguntas.</p>
+  <div class="grid g3">
+    <div class="card"><div class="big">25<small> / 25</small></div><p><b>Worker</b>: token, validação, duplicata, resumo SQL, KV, cooldown.</p></div>
+    <div class="card"><div class="big">15<small> / 15</small></div><p><b>Ponte</b>: assinatura, forjados descartados, alertas, comando, ack, timeout.</p></div>
+    <div class="card"><div class="big">11<small> / 11</small></div><p><b>Ponta a ponta</b> com o broker real em TLS, comando retido e 2 falsos rejeitados.</p></div>
+    <div class="card"><div class="big">15<small> / 15</small></div><p><b>Painel</b> no Chrome headless: valores, gráfico, resumo, “enviado → executado”.</p></div>
+    <div class="card"><div class="big">✓</div><p><b>Firmware no Wokwi</b>: regra de umidade e temperatura, falha do sensor (3ª → ON + alerta), 4 comandos falsos rejeitados.</p></div>
+    <div class="card" style="background:var(--warnbg);border-color:transparent"><div class="big" style="color:var(--warn)">!</div><p><b>Limites:</b> o Wokwi reinicia a placa em ~12 s e perde a RTC (sono real e fila offline não testados); a histerese não foi vista lá; a autonomia não foi medida.</p></div>
+  </div>
+</section>
+
+<!-- ============================================================ PERGUNTAS -->
+<section id="perguntas">
+  <h2><span class="n">11</span>Perguntas da turma</h2>
+  <p class="sub">Clique para ver a resposta. Roteiro de 4 minutos: problema → arquitetura → escolhas → demonstração → o que falta.</p>
+  <div class="grid g2">
+    <details class="card qa"><summary>E se a internet cair?</summary><p>O ESP32 decide sozinho (a regra roda nele). Guarda até 24 leituras na RTC e reenvia na volta, marcadas como atrasadas. A ponte avisa <code>silo_offline</code> após 2,5 ciclos sem dados.</p></details>
+    <details class="card qa"><summary>E se alguém publicar no seu tópico?</summary><p>Sem HMAC e sequência válidos, o ESP32 ignora e registra “REJEITADO”. Telemetria falsa a ponte descarta. O atacante não consegue nem “queimar” a sequência, porque ela só avança com comando autêntico.</p></details>
+    <details class="card qa"><summary>E com 1.000 unidades?</summary><p>Tópicos com <code>+</code> (um assinante para todos), uma chave HMAC por silo, a ponte vira consumidora de fila e o D1 particiona por silo. O custo cai com módulo ESP32 nu (sem chip USB).</p></details>
+    <details class="card qa"><summary>Por que decidir no ESP32 e não na nuvem?</summary><p>Precisa funcionar sem internet, o ESP32 dorme (a nuvem não o chama) e a reação tem que ser rápida. A nuvem só ajusta os limites e cuida de alertas e cooldown.</p></details>
+    <details class="card qa"><summary>Por que MQTT retido?</summary><p>O comando espera no broker até o ESP32 acordar. Basta ~1,5 s de rádio por ciclo, em vez de ficar 5 s acordado esperando — 34 % menos corrente média.</p></details>
+    <details class="card qa"><summary>O que falta para virar produto?</summary><p>Broker próprio com controle de acesso por dispositivo; medir a corrente real e otimizar o Wi-Fi (IP fixo, canal guardado); relé e fonte do ventilador; caixa vedada para poeira; provisionamento de segredo por silo.</p></details>
+  </div>
+</section>
+
+</main>
+<footer>Silo Vigia · IoT G0813 · Faculdade Antonio Meneghetti · github.com/yurigarciia/iot-internet-of-things</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ---------------------------------------------------------------- barra do ciclo
+(() => {
+  const fases = [["Boot + DHT22", 2.5, 45, "#6b8f71"], ["Wi-Fi + NTP", 3, 130, "#d9822b"], ["TLS + MQTT", 3, 140, "#2a6f97"]];
+  const tot = fases.reduce((a, f) => a + f[1] * f[2], 0);
+  $("barraCiclo").innerHTML = fases.map(f => `<div style="flex:${f[1] * f[2]};background:${f[3]}" title="${f[0]}: ${f[1]} s a ${f[2]} mA">${f[0]} · ${Math.round(f[1] * f[2] / tot * 100)}%</div>`).join("");
+})();
+
+// ---------------------------------------------------------------- simulador da regra
+let vent = 0, falhas = 0, sensorOk = true;
+function decidir(motivo) {
+  const u = +$("u").value, t = +$("t").value;
+  $("uV").textContent = u; $("tV").textContent = t;
+  let why = "";
+  if (!sensorOk) {
+    if (falhas >= 3) { vent = 1; why = "estado seguro: sensor falhou 3×"; } else why = "sensor inválido: mantém o estado (" + falhas + "/3)";
+  } else if (!vent && (u >= 70 || t >= 35)) { vent = 1; why = u >= 70 ? "umidade ≥ 70 % → liga" : "temperatura ≥ 35 °C → liga"; }
+  else if (vent && u <= 65 && t <= 32) { vent = 0; why = "umidade ≤ 65 % e temp ≤ 32 → desliga"; }
+  else why = vent ? "ligado: só desliga com umid ≤ 65 % e temp ≤ 32" : "desligado: só liga com umid ≥ 70 % ou temp ≥ 35";
+  $("led").classList.toggle("on", !!vent);
+  $("fanTxt").textContent = vent ? "Ventilador LIGADO" : "Ventilador desligado";
+  $("fanWhy").textContent = why; $("fanWhy").className = "pill " + (vent ? "warn" : "ok");
+  $("fV").textContent = falhas;
+  $("stOn").setAttribute("fill", vent ? "var(--warnbg)" : "var(--soft)"); $("stOn").setAttribute("stroke", vent ? "var(--fan)" : "var(--line)");
+  $("stOff").setAttribute("fill", vent ? "var(--soft)" : "var(--okbg)"); $("stOff").setAttribute("stroke", vent ? "var(--line)" : "var(--ok)");
+}
+$("u").oninput = $("t").oninput = () => decidir();
+$("sFalha").onclick = () => { sensorOk = false; falhas++; decidir(); };
+$("sOk").onclick = () => { sensorOk = true; falhas = 0; decidir(); };
+$("sReset").onclick = () => { vent = 0; falhas = 0; sensorOk = true; $("u").value = 62; $("t").value = 27; decidir(); };
+decidir();
+
+// ---------------------------------------------------------------- diagrama de sequência do comando
+const COL = { painel: 90, ponte: 340, broker: 590, esp: 840 };
+const NOMES = { painel: "Painel", ponte: "Ponte", broker: "Broker MQTT", esp: "ESP32" };
+const ROTEIROS = {
+  legit: [
+    { de: "painel", para: "ponte", y: 90, rot: "POST /comando  ventilador=on", txt: "O painel pede o comando à ponte, com token próprio. A chave HMAC <b>não está no navegador</b>: quem assina é a ponte." },
+    { de: "ponte", para: "ponte", y: 135, rot: "valida + assina (HMAC)", txt: "A ponte só assina comandos da lista permitida. A sequência é <code>max(hora Unix, último+1)</code>: cresce sempre, mesmo se o arquivo se perder." },
+    { de: "ponte", para: "broker", y: 180, rot: "publish RETIDO · QoS 1", txt: "O ESP32 está <b>dormindo</b>. O broker guarda o comando até alguém assinar o tópico. O painel mostra <span class='pill warn'>enviado — aguardando</span>.", sono: true },
+    { de: "esp", para: "esp", y: 235, rot: "acorda · lê · decide · TLS", txt: "30 min depois (ciclo), o ESP32 acorda, lê o sensor, <b>decide sozinho</b> e só então conecta.", acorda: true },
+    { de: "esp", para: "broker", y: 280, rot: "subscribe …/comando", txt: "Ao assinar, o broker entrega na hora a mensagem retida." },
+    { de: "broker", para: "esp", y: 320, rot: "comando retido + mac", txt: "Chega o comando com <code>seq</code>, <code>cmd</code>, <code>valor</code> e <code>mac</code>." },
+    { de: "esp", para: "esp", y: 360, rot: "confere HMAC e seq > último", txt: "Assinatura válida <b>e</b> sequência maior que a última (guardada na NVS). Só então aplica, avança a sequência e religa o ventilador." },
+    { de: "esp", para: "broker", y: 400, rot: "ack assinado (retido)", txt: "O ESP32 devolve o resultado: <code>ok</code>, <code>motivo</code> e o estado final." },
+    { de: "broker", para: "ponte", y: 430, rot: "ack → painel: executado ✓", txt: "A ponte confere a assinatura do ack. <b>Só agora</b> o painel mostra <span class='pill ok'>executado ✓</span>. Sem ack em 2 × ciclo + 30 s: <span class='pill bad'>sem confirmação</span>." },
+  ],
+  fake: [
+    { de: "atacante", para: "broker", y: 110, rot: "publish …/comando (sem mac)", txt: "O broker é público: qualquer um que saiba o tópico consegue publicar. O atacante tenta desligar o ventilador de um silo úmido." },
+    { de: "esp", para: "esp", y: 190, rot: "acorda · lê · decide · TLS", txt: "Na próxima vez que o ESP32 acordar, ele decide pela regra normalmente e se inscreve no tópico.", acorda: true },
+    { de: "broker", para: "esp", y: 250, rot: "comando retido (falso)", txt: "O broker entrega a mensagem retida — inclusive a falsa." },
+    { de: "esp", para: "esp", y: 310, rot: "HMAC inválido → REJEITADO", txt: "A assinatura não confere. O ESP32 <b>ignora</b>, registra “REJEITADO: assinatura invalida” e o ventilador <b>não muda</b>. A sequência também não avança: o atacante não consegue “queimar” números." },
+    { de: "esp", para: "broker", y: 370, rot: "ack ok=false (assinado)", txt: "O ESP32 responde com um ack de rejeição, assinado. Comandos falsos só deixam rastro; não têm efeito." },
+  ],
+};
+let modo = "legit", passo = 0;
+function desenhaSeq() {
+  const rot = ROTEIROS[modo], cols = modo === "fake" ? { ...COL, atacante: 90 } : COL;
+  if (modo === "fake") { cols.painel = -999; cols.ponte = -999; cols.atacante = 90; cols.broker = 420; cols.esp = 750; }
+  const ativos = Object.keys(cols).filter(k => cols[k] > 0);
+  let s = `<defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker></defs>`;
+  const NOM = { ...NOMES, atacante: "Atacante" };
+  ativos.forEach(k => {
+    const x = cols[k], fake = k === "atacante";
+    s += `<rect x="${x - 70}" y="14" width="140" height="34" rx="9" fill="${fake ? "var(--badbg)" : "var(--soft)"}" stroke="${fake ? "var(--bad)" : "var(--line)"}"/><text x="${x}" y="36" text-anchor="middle" font-weight="700" font-size="14">${NOM[k]}</text>`;
+    s += `<line x1="${x}" y1="48" x2="${x}" y2="460" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 5"/>`;
+  });
+  // faixa de sono do ESP32
+  const wake = rot.findIndex(p => p.acorda);
+  if (wake > 0 || (modo === "fake" && wake >= 0)) {
+    const y2 = rot[wake].y - 18, vis = passo >= 0 ? passo : 0;
+    s += `<rect x="${cols.esp - 20}" y="52" width="40" height="${y2 - 52}" rx="8" fill="var(--soft)"/><text x="${cols.esp}" y="${(52 + y2) / 2}" text-anchor="middle" font-size="12" class="svgmut" transform="rotate(-90 ${cols.esp} ${(52 + y2) / 2})">dormindo… zzz</text>`;
+  }
+  rot.forEach((p, i) => {
+    if (i > passo) return;
+    const atual = i === passo, cor = p.de === "atacante" ? "var(--bad)" : (atual ? "var(--acc)" : "var(--mut)");
+    const x1 = cols[p.de], x2 = cols[p.para], w = atual ? 3 : 2;
+    if (x1 === x2) {
+      const esq = x1 > 600;                      // coluna da direita: o laço e o texto vão para a esquerda (senão saem da tela)
+      s += `<path d="M${x1} ${p.y - 14} h${esq ? -46 : 46} v28 h${esq ? 46 : -46}" fill="none" stroke="${cor}" stroke-width="${w}" marker-end="url(#ah3)"/>`;
+      s += `<text x="${esq ? x1 - 56 : x1 + 56}" y="${p.y + 5}" ${esq ? 'text-anchor="end"' : ""} font-size="13.5" ${atual ? 'font-weight="700"' : ""}>${p.rot}</text>`;
+    } else {
+      const dir = x2 > x1 ? 1 : -1;
+      s += `<line x1="${x1}" y1="${p.y}" x2="${x2 - dir * 4}" y2="${p.y}" stroke="${cor}" stroke-width="${w}" marker-end="url(#ah3)"/>`;
+      s += `<text x="${(x1 + x2) / 2}" y="${p.y - 8}" text-anchor="middle" font-size="13.5" ${atual ? 'font-weight="700"' : ""}>${p.rot}</text>`;
+    }
+    s += `<circle cx="${Math.min(x1, x2) - 20 < 8 ? 14 : Math.min(x1, x2) - 22}" cy="${p.y}" r="0"/>`;
+  });
+  $("seq").innerHTML = s;
+  $("seqTxt").innerHTML = `<b>Passo ${passo + 1} de ${rot.length}.</b> ` + rot[passo].txt;
+}
+function setModo(m) { modo = m; passo = 0; $("mLegit").classList.toggle("on", m === "legit"); $("mFake").classList.toggle("on", m === "fake"); desenhaSeq(); }
+$("mLegit").onclick = () => setModo("legit"); $("mFake").onclick = () => setModo("fake");
+$("next").onclick = () => { passo = Math.min(passo + 1, ROTEIROS[modo].length - 1); desenhaSeq(); };
+$("prev").onclick = () => { passo = Math.max(passo - 1, 0); desenhaSeq(); };
+$("rst").onclick = () => { passo = 0; desenhaSeq(); };
+desenhaSeq();
+
+// ---------------------------------------------------------------- cooldown (ilustração)
+(() => {
+  let s = "";
+  for (let i = 0; i < 9; i++) {
+    const x = 30 + i * 42, primeiro = i === 0 || i === 6, dentro = i > 0 && i < 4;
+    s += `<circle cx="${x}" cy="60" r="${primeiro ? 9 : 5}" fill="${primeiro ? "var(--bad)" : "var(--mut)"}" opacity="${primeiro ? 1 : .6}"/>`;
+    if (primeiro) s += `<text x="${x}" y="40" text-anchor="middle" font-size="11" font-weight="700" fill="var(--bad)">ALERTA</text>`;
+  }
+  $("cdTicks").innerHTML = s;
+})();
+
+// ---------------------------------------------------------------- calculadora de energia
+(() => {
+  const periodos = [30, 300, 900, 1800, 3600, 7200], nomes = ["30 s", "5 min", "15 min", "30 min", "60 min", "2 h"];
+  const ativo = 8.5, carga = (2.5 * 45 + 3 * 130 + 3 * 140) / 3600, cap = 6000 * 0.8;
+  function calc() {
+    const i = +$("p").value, p = periodos[i]; $("pV").textContent = nomes[i];
+    const sem = $("semSono").checked;
+    const med = sem ? 80 : (carga + (p - ativo) * 0.06 / 3600) * 3600 / p;
+    const dias = cap / med / 24;
+    $("iMed").innerHTML = (med < 10 ? med.toFixed(2) : med.toFixed(1)) + "<small> mA</small>";
+    $("dias").innerHTML = (dias < 10 ? dias.toFixed(1) : Math.round(dias)) + "<small> dias</small>";
+    const ok = dias >= 300; $("meta").textContent = ok ? "meta atingida" : "abaixo da meta"; $("meta").className = "pill " + (ok ? "ok" : "bad");
+  }
+  $("p").oninput = calc; $("semSono").onchange = calc; calc();
+})();
+
+// ---------------------------------------------------------------- menu: destaca a seção visível
+(() => {
+  const links = [...document.querySelectorAll("#nav a")], secs = links.map(a => document.querySelector(a.getAttribute("href")));
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach((a, i) => a.classList.toggle("on", secs[i] === e.target)); }), { rootMargin: "-30% 0px -60% 0px" });
+  secs.forEach(s => s && io.observe(s));
+})();
+</script>
+</body>
+</html>
